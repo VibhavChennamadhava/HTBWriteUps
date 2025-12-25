@@ -12,15 +12,15 @@ This hinted at something related to the touch command, likely combined with priv
 
 The Hack the Box touch reavealed an Host IP and Port Address which we can connect with using utility tools like netcat and telnet for network communication.
 
-![image](https://github.com/user-attachments/assets/c7daa489-fe26-4ab3-81ed-306f79846c9e)
+![image](screenshots/Connection_1.png)
 
 Nmap scan of the target only revealed one open port which we could connect to
 
-![image](https://github.com/user-attachments/assets/0165c26f-f255-4704-9f17-c7ceea7f6de5)
+![image](screenshots/Picture7.png)
 
 We started with a foothold as the low-privileged user ctf. First, we checked:
 
-![image](https://github.com/user-attachments/assets/9604f3f3-2d96-4e5c-ac07-0061388c2bf1)
+![image](screenshots/Picture2.png)
 
 SUID binaries:**
 
@@ -29,7 +29,7 @@ The key finding:
 
 -rwsr-sr-x 1 root root 97152 Feb 28  2019 /bin/touch
 
-![image](https://github.com/user-attachments/assets/eabcaf6f-b1f6-4cb1-ae0d-12cb5e5fb566)
+![image](screenshots/Picture3.png)
 
 ✅ Interesting: /bin/touch has the SUID bit set — it runs as root.
 
@@ -73,7 +73,7 @@ Using dd:
 
 dd if=/home/ctf/exploit.sh of=/tmp/root_shell conv=notrunc
 
-![image](https://github.com/user-attachments/assets/4d267f06-f712-4103-a87a-04bbecd7a7a5)
+![image](screenshots/Picture5.png)
 
 ❌ Result: Permission denied — expected since SUID binaries don’t give root write access to arbitrary files.
 
