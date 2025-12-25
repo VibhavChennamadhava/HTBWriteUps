@@ -12,15 +12,15 @@ This hinted at something related to the touch command, likely combined with priv
 
 The Hack the Box touch reavealed an Host IP and Port Address which we can connect with using utility tools like netcat and telnet for network communication.
 
-![image](screenshots/Connection_1.png)
+![image](screenshots/touch_box.png)
 
 Nmap scan of the target only revealed one open port which we could connect to
 
-![image](screenshots/Picture7.png)
+![image](screenshots/nmap.png)
 
 We started with a foothold as the low-privileged user ctf. First, we checked:
 
-![image](screenshots/Picture2.png)
+![image](screenshots/Connection_1.png)
 
 SUID binaries:**
 
@@ -29,7 +29,7 @@ The key finding:
 
 -rwsr-sr-x 1 root root 97152 Feb 28  2019 /bin/touch
 
-![image](screenshots/Picture3.png)
+![image](screenshots/Picture2.png)
 
 ✅ Interesting: /bin/touch has the SUID bit set — it runs as root.
 
@@ -73,7 +73,7 @@ Using dd:
 
 dd if=/home/ctf/exploit.sh of=/tmp/root_shell conv=notrunc
 
-![image](screenshots/Picture5.png)
+![image](screenshots/Picture3.png)
 
 ❌ Result: Permission denied — expected since SUID binaries don’t give root write access to arbitrary files.
 
@@ -104,7 +104,7 @@ Copied the output file by first encoding it using base64 and decoding it on loca
 
 This was done locally reason for this is there is no gcc compiler on target HTB machine.
 
-![image](https://github.com/user-attachments/assets/e7801296-b87b-44b8-905c-c89ac9ac6cae)
+![image](screenshots/Picture4.png)
 
 Then ran:
 
@@ -118,7 +118,7 @@ Wrote path to /etc/ld.so.preload: echo /tmp/preload.so > /etc/ld.so.preload
 
 Triggered SUID binary: touch
 
-![image](https://github.com/user-attachments/assets/55982fce-14d8-4d50-9531-065d41d2b78e)
+![image](screenshots/Picture5.png)
 
 🔎 Result:
 If the SUID binary honored LD\_PRELOAD (which is rare for SUID binaries and this would escalate to root.)
@@ -127,7 +127,7 @@ Result: popped a root shell!
 
 We’re IN the root, Only thing left is now to switch to root and grab the flag.
 
-![image](https://github.com/user-attachments/assets/bf081708-7607-41d5-8048-6c644a6b31d0)
+![image](screenshots/touch_pwned.png)
 
 🚀 Conclusion
 
