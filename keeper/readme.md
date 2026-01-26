@@ -76,7 +76,10 @@ KeePass is usually very secure, so I initially assumed this might be a dead end.
 
 In simple terms, KeePass doesn’t fully clean up memory while a password is being typed. If a memory dump is taken, parts of the master password can still be recovered.
 
-Using a public proof-of-concept tool on the memory dump, I was able to recover most of the master password. The output wasn’t perfect, though — some characters were missing or slightly off. This was another small hurdle.
+Using a public proof-of-concept tool on the memory dump,
+which was this -> https://github.com/vdohney/keepass-password-dumper
+
+I was able to recover most of the master password. The output wasn’t perfect, though — first character was missing or slightly off, this was another small hurdle.
 
 To solve this, I used common sense and a quick Google search, which helped me correct the phrase and successfully unlock the KeePass database.
 
