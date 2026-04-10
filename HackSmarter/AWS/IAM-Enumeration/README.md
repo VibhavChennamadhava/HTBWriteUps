@@ -36,6 +36,8 @@ aws sts get-caller-identity --profile bob
 ```
 
 At this point we had three important anchors:
+
+![Caller identity output](assets/6.png)
 1. the **account ID** we were operating in
 2. the **principal ARN** (`arn:aws:iam::<account-id>:user/bob`)
 3. confidence that subsequent results reflected Bob’s effective permissions
@@ -96,6 +98,8 @@ aws iam get-user-policy \
 ```
 
 We repeated this pattern for groups and roles discovered later in the process to avoid blind spots.
+
+![Inline policy inspection](assets/7.png)
 
 ## Group membership enumeration
 Next, we mapped Bob’s group memberships and then expanded into group-attached policies.
@@ -172,6 +176,8 @@ Key checks during version review:
 - **JSON readability**: piping output through `jq` made policy statements much faster to review.
 - **Profile confusion**: using explicit `--profile bob` prevented accidental use of default credentials.
 
+![Credential/profile configuration check](assets/cert.png)
+
 ## Commands used
 ```bash
 # Identity and baseline
@@ -203,6 +209,21 @@ aws iam get-policy --policy-arn arn:aws:iam::<account-id>:policy/<policy-name> -
 aws iam list-policy-versions --policy-arn arn:aws:iam::<account-id>:policy/<policy-name> --profile bob
 aws iam get-policy-version --policy-arn arn:aws:iam::<account-id>:policy/<policy-name> --version-id v1 --profile bob
 ```
+
+## Screenshots referenced
+To keep paths stable, all IAM screenshots should live under `assets/` and be referenced relatively from this README.
+
+- `assets/1.png` — Identity validation and account context
+- `assets/2.png` — Role and trust relationship review
+- `assets/3.png` — Managed policy review
+- `assets/4.png` — Group membership mapping
+- `assets/5.png` — Policy version inspection
+- `assets/6.png` — Caller identity output
+- `assets/7.png` — Inline policy inspection
+- `assets/8.png` — Additional IAM evidence snapshot
+- `assets/cert.png` — CLI credential/profile setup snapshot
+
+![Additional IAM evidence](assets/8.png)
 
 ## What I learned
 This walkthrough reinforced that cloud enumeration is most effective when it is relationship-driven, not command-driven. Enumerating users, groups, roles, and policy versions as connected objects made permission inheritance and potential escalation routes much clearer than isolated checks.
