@@ -5,9 +5,7 @@ This assessment focused on mapping AWS Identity and Access Management (IAM) from
 
 The main outcome was not a “single trick,” but a structured IAM map: who can do what, through which policy type, and under which trust relationship.
 
-<!-- screenshot placeholder: identity validation and account context -->
-
-*Figure: Console or CLI evidence confirming the active IAM identity and AWS account scope.*
+![Identity validation and account context](assets/iam-identity-validation.png)
 
 ## Why IAM matters in AWS security
 In AWS, IAM is the control plane for identity and authorization. If compute, storage, or data services are the infrastructure, IAM is the decision engine that gates access to all of it.
@@ -39,13 +37,10 @@ aws sts get-caller-identity --profile bob
 
 At this point we had three important anchors:
 
+![Caller identity output](assets/iam-caller-identity.png)
 1. the **account ID** we were operating in
 2. the **principal ARN** (`arn:aws:iam::<account-id>:user/bob`)
 3. confidence that subsequent results reflected Bob’s effective permissions
-
-<!-- screenshot placeholder: sts caller identity output -->
-
-*Figure: `sts get-caller-identity` output showing Bob's ARN and account ID.*
 
 ## Core IAM concepts used during the assessment
 The following concepts were central during enumeration:
@@ -87,9 +82,7 @@ aws iam get-policy-version \
 
 This showed where Bob had direct visibility and where permissions were inherited indirectly through groups.
 
-<!-- screenshot placeholder: managed policy review -->
-
-*Figure: Managed policy attachment and policy document review for the active principal.*
+![Managed policy review](assets/iam-managed-policy-review.png)
 
 ## Inline policy enumeration
 Inline policies are easy to miss because they are not reusable objects and do not appear in managed-policy listings.
@@ -106,9 +99,7 @@ aws iam get-user-policy \
 
 We repeated this pattern for groups and roles discovered later in the process to avoid blind spots.
 
-<!-- screenshot placeholder: inline policy inspection -->
-
-*Figure: Inline policy listing and statement-level review for user/group/role context.*
+![Inline policy inspection](assets/iam-inline-policy-review.png)
 
 ## Group membership enumeration
 Next, we mapped Bob’s group memberships and then expanded into group-attached policies.
@@ -127,9 +118,7 @@ aws iam list-group-policies \
 
 This is where effective permissions often become broader than expected: users may look constrained individually but inherit powerful actions from a group.
 
-<!-- screenshot placeholder: group membership mapping -->
-
-*Figure: Group membership and inherited permission path from Bob to attached policies.*
+![Group membership mapping](assets/iam-group-membership.png)
 
 ## Role enumeration
 After user and group mapping, we pivoted into role inventory and trust analysis.
@@ -152,9 +141,7 @@ aws iam list-role-policies \
 
 We reviewed role trust policies carefully to understand who could assume each role and whether role chaining might exist.
 
-<!-- screenshot placeholder: role trust and policy relationships -->
-
-*Figure: Role inventory with trust policy details and attached permissions.*
+![Role and policy relationship review](assets/iam-role-trust-review.png)
 
 ## Managed policy version review
 Managed policy versioning can hide risk if older permissive versions still exist and a principal can switch defaults.
@@ -170,9 +157,7 @@ aws iam get-policy-version \
   --profile bob
 ```
 
-<!-- screenshot placeholder: managed policy version inspection -->
-
-*Figure: Managed policy version list highlighting default and historical versions.*
+![Policy version inspection](assets/iam-policy-version-review.png)
 
 Key checks during version review:
 - Is the default version the most restrictive current intent?
@@ -191,9 +176,7 @@ Key checks during version review:
 - **JSON readability**: piping output through `jq` made policy statements much faster to review.
 - **Profile confusion**: using explicit `--profile bob` prevented accidental use of default credentials.
 
-<!-- screenshot placeholder: aws cli profile configuration -->
-
-*Figure: Local CLI profile setup using redacted credentials and region/output defaults.*
+![Credential/profile configuration check](assets/iam-cli-profile-setup.png)
 
 ## Commands used
 ```bash
@@ -228,9 +211,19 @@ aws iam get-policy-version --policy-arn arn:aws:iam::<account-id>:policy/<policy
 ```
 
 ## Screenshots referenced
-Screenshot links were audited and any missing local assets were replaced with neutral placeholders to avoid broken rendering in a public repository.
+To keep paths stable, all IAM screenshots should live under `assets/` and use descriptive filenames.
 
-When you add screenshots back into `assets/`, keep them directly under the section they support and use descriptive alt text plus a short caption.
+- `assets/iam-identity-validation.png` — Identity validation and account context
+- `assets/iam-role-trust-review.png` — Role and trust relationship review
+- `assets/iam-managed-policy-review.png` — Managed policy review
+- `assets/iam-group-membership.png` — Group membership mapping
+- `assets/iam-policy-version-review.png` — Policy version inspection
+- `assets/iam-caller-identity.png` — Caller identity output
+- `assets/iam-inline-policy-review.png` — Inline policy inspection
+- `assets/iam-additional-evidence.png` — Additional IAM evidence snapshot
+- `assets/iam-cli-profile-setup.png` — CLI credential/profile setup snapshot
+
+![Additional IAM evidence](assets/iam-additional-evidence.png)
 
 ## What I learned
 This walkthrough reinforced that cloud enumeration is most effective when it is relationship-driven, not command-driven. Enumerating users, groups, roles, and policy versions as connected objects made permission inheritance and potential escalation routes much clearer than isolated checks.
