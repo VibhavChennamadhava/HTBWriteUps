@@ -1,4 +1,4 @@
-# HTB: Keeper — writeup
+# HTB — Keeper Writeup
 
 **Author:** Vibhav Chennamadhava
 **Difficulty:** Easy
@@ -7,6 +7,8 @@
 
 ---
 
+## Overview
+
 ## 🧭 Introduction
 
 Keeper is one of those HTB machines that looks simple on the surface but actually teaches a lot of **real-world security lessons**. There were no crazy exploits or advanced reverse engineering involved. Instead, this box focused on **misconfigurations, human mistakes, and poor credential handling** — things that happen all the time in real environments.
@@ -14,6 +16,8 @@ Keeper is one of those HTB machines that looks simple on the surface but actuall
 In this write-up, I’ll walk through how I approached the machine, the hurdles I faced, and how everything connected step by step.
 
 ---
+
+## Methodology / Steps
 
 ## 🔍 Enumeration — Figuring Out What’s There
 
@@ -117,7 +121,13 @@ What made Keeper interesting wasn’t technical difficulty, but how realistic th
 
 ---
 
-## 🧠 What I Learned
+## Findings
+
+- Initial compromise came from weak operational practices (default credentials and plaintext password handling).
+- Post-exploitation artifacts (KeePass dump + memory dump) enabled recovery of high-value credentials.
+- Privilege escalation was achieved through key exposure rather than local kernel/service exploitation.
+
+## Lessons Learned
 
 * Enumeration is everything — rushing would have missed key details
 * Small misconfigurations can chain into full compromise
@@ -130,3 +140,8 @@ What made Keeper interesting wasn’t technical difficulty, but how realistic th
 ## 🎯 Closing Thoughts
 
 Keeper was a great example of how attackers don’t always need advanced exploits. Sometimes, all it takes is careful enumeration, basic research, and connecting the dots. For anyone new to HTB, this box is a perfect lesson in **thinking like an attacker while understanding real-world security failures**.
+
+
+## Screenshots
+
+Any supporting images for this writeup should be stored in [`assets/`](assets/).

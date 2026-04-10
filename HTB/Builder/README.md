@@ -1,15 +1,19 @@
-# Hack The Box – **Builder**  writeup
+# HTB — Builder Writeup
 **Machine Name:** Builder
 **Difficulty:** Medium
 **OS:** Linux
 **Main Technology:** Jenkins
 **Key Vulnerability:** CVE‑2024‑23897 (Jenkins CLI Arbitrary File Read)
 
+## Overview
+
 Builder is a medium‑difficulty box that focuses heavily on understanding how Jenkins works internally. The box starts with exploiting a real Jenkins vulnerability to read files, then slowly pivots into credential extraction, password cracking, and finally abusing Jenkins features to escalate privileges to root.
 
 This machine felt less about “running exploits blindly” and more about **reading, thinking, and understanding what Jenkins is actually doing behind the scenes**, which made it very educational.
 
 ---
+
+## Methodology / Steps
 
 ## 🔍 Enumeration
 
@@ -28,7 +32,7 @@ PORT     STATE SERVICE VERSION
 * SSH was open, but no credentials yet.
 * Jenkins was running on port **8080**, which immediately became the main attack surface.
 
-![Nmap scan](screenshots/1.png)
+![Nmap scan](assets/1.png)
 
 ---
 
@@ -40,11 +44,11 @@ After some research, I discovered that this Jenkins version is vulnerable to **C
 
 This was a big moment in the box — instead of brute forcing or guessing, the goal became **reading sensitive files directly from the Jenkins controller**.
 
-![jenkins](screenshots/3.png)
+![jenkins](assets/3.png)
 
 Version running
 
-![version](screenshots/5.png)
+![version](assets/5.png)
 
 ---
 
@@ -81,13 +85,13 @@ java -jar jenkins-cli.jar -noCertificateCheck -s http://10.129.230.220:8080 help
 
 ```
 Key output:
-![alt text](screenshots/6.png)
-![alt text](screenshots/7.png)
+![alt text](assets/6.png)
+![alt text](assets/7.png)
 
 ```
 HOME=/var/jenkins_home
 ```
-![alt text](screenshots/8.png)
+![alt text](assets/8.png)
 
 
 ### Why this matters
@@ -108,7 +112,7 @@ java -jar jenkins-cli.jar -noCertificateCheck -s http://10.129.230.220:8080 help
 
 This leaked the **user flag**.
 
-![usrflag](screenshots/9.png)
+![usrflag](assets/9.png)
 
 ---
 
@@ -140,8 +144,8 @@ java -jar jenkins-cli.jar -noCertificateCheck -s http://10.129.230.220:8080 conn
 
 Inside this file was a **bcrypt password hash**.
 
-![password hash*](screenshots/13.png)
-![pass](screenshots/14.png)
+![password hash*](assets/13.png)
+![pass](assets/14.png)
 
 ---
 
@@ -156,7 +160,7 @@ I saved the hash into `hash.txt` and used the rockyou wordlist:
 ```
 john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt
 ```
-![cracked](screenshots/cracked3.png)
+![cracked](assets/cracked3.png)
 
 ### Hurdle I Faced 🚧
 
@@ -188,7 +192,7 @@ Inside Jenkins, I discovered:
 
 This meant Jenkins could authenticate as **root**.
 
-![Jenkins credentials*](screenshots/15.png)
+![Jenkins credentials*](assets/15.png)
 
 ---
 
@@ -217,7 +221,7 @@ pipeline {
 
 This leaked the **root SSH private key** in the build output.
 
-![pipeline script](screenshots/16.png)
+![pipeline script](assets/16.png)
 
 Yes, i learned hard way indentation matters here
 
@@ -231,7 +235,7 @@ After saving the key and setting permissions:
 chmod 600 root_key
 ssh -i root_key root@10.129.230.220
 ```
-![sshkey](screenshots/17.png)
+![sshkey](assets/17.png)
 
 I gained root access and retrieved the final flag:
 
@@ -239,7 +243,7 @@ I gained root access and retrieved the final flag:
 /root/root.txt
 ```
 
-![root](screenshots/root.png)
+![root](assets/root.png)
 
 ---
 
@@ -262,3 +266,20 @@ This box strengthened my confidence in:
 * Jenkins internals
 * Credential abuse and privilege escalation
 
+
+
+## Findings
+
+- Jenkins CLI file-read abuse (CVE-2024-23897) exposed sensitive controller files.
+- Recovered Jenkins credentials enabled authenticated access and pipeline abuse.
+- Mismanaged Jenkins SSH credentials allowed root-level command execution.
+
+## Lessons Learned
+
+- Understand the target technology deeply before launching noisy attacks.
+- Configuration hygiene in CI/CD platforms is just as important as patching CVEs.
+- Credential handling mistakes can collapse multiple trust boundaries quickly.
+
+## Screenshots
+
+Supporting screenshots are stored in [`assets/`](assets/).
