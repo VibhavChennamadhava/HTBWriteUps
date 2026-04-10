@@ -5,7 +5,7 @@ This assessment focused on mapping AWS Identity and Access Management (IAM) from
 
 The main outcome was not a “single trick,” but a structured IAM map: who can do what, through which policy type, and under which trust relationship.
 
-![Identity validation and account context](assets/iam-01.png)
+![Identity validation and account context](assets/1.png)
 
 ## Why IAM matters in AWS security
 In AWS, IAM is the control plane for identity and authorization. If compute, storage, or data services are the infrastructure, IAM is the decision engine that gates access to all of it.
@@ -80,6 +80,8 @@ aws iam get-policy-version \
 
 This showed where Bob had direct visibility and where permissions were inherited indirectly through groups.
 
+![Managed policy review](assets/3.png)
+
 ## Inline policy enumeration
 Inline policies are easy to miss because they are not reusable objects and do not appear in managed-policy listings.
 
@@ -112,6 +114,8 @@ aws iam list-group-policies \
 
 This is where effective permissions often become broader than expected: users may look constrained individually but inherit powerful actions from a group.
 
+![Group membership mapping](assets/4.png)
+
 ## Role enumeration
 After user and group mapping, we pivoted into role inventory and trust analysis.
 
@@ -133,7 +137,7 @@ aws iam list-role-policies \
 
 We reviewed role trust policies carefully to understand who could assume each role and whether role chaining might exist.
 
-![Role and policy relationship review](assets/iam-02.png)
+![Role and policy relationship review](assets/2.png)
 
 ## Managed policy version review
 Managed policy versioning can hide risk if older permissive versions still exist and a principal can switch defaults.
@@ -148,6 +152,8 @@ aws iam get-policy-version \
   --version-id v2 \
   --profile bob
 ```
+
+![Policy version inspection](assets/5.png)
 
 Key checks during version review:
 - Is the default version the most restrictive current intent?
